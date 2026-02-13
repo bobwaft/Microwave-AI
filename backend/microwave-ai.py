@@ -5,12 +5,9 @@ os.environ["TF_NUM_INTRAOP_THREADS"] = "8"
 import pandas as pd
 import numpy as np
 import math
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-import plotly.express as px
-import tensorflow as tf
+# import tensorflow as tf
 import json
 
 # TODO read in the training data json
@@ -18,22 +15,36 @@ import json
 with open ("data/food-101/meta/train.json", "r") as file:
     train_json = json.load(file)
 
+with open ("data/food-101/meta/test.json", "r") as file:
+    test_json = json.load(file)
 
-# TODO read in images from this
 
-def show_img(array):
-    plt.imshow(array, cmap="gray")
-    plt.axis("off")
-    plt.show()
+# Create Encoder & Decoder
+encodeTable = {}
+decodeTable = {}
+foods = list(train_json.keys())
+for i in range(0,len(foods)):
+    encodeTable[foods[i]] = i
+    decodeTable[i] = foods[i]
 
-X_train = []
-y_train = []
+def encodeList(list):
+    return [encodeTable[item] for item in list]
 
-encoder = LabelEncoder()
+def decode(item):
+    return decodeTable[item]
 
-for food in train_json:
-    for food_file in train_json[food]:
-        X_train.append("data/food-101/images/{food_file}.jpg")
-        y_train.append(food)
 
-        
+def readData(json):
+    X_dat = []
+    y_dat = []
+    for food in json:
+        for food_file in train_json[food]:
+            print(food_file)
+            X_dat.append(mpimg.imread(f"data/food-101/images/{food_file}.jpg", format='jpg')[:,:,0])
+            y_dat.append(food)
+    return X_dat, y_dat
+
+
+X_train, y_train = readData(train_json)
+X_test, y_test = readData(test_json)
+
