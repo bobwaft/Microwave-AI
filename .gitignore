@@ -1,1 +1,6 @@
 backend/data/
+FrontEnd/node_modules
+FrontEnd/build
+FrontEnd/dist
+FrontEnd/.env
+FrontEnd/.DS_Store
