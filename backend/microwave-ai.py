@@ -21,10 +21,10 @@ import random
 # with open ("data/food-101/meta/test.json", "r") as file:
 #     test_json = json.load(file)
 
-with open ("gs://microwave-ai-food101/food-101/food-101/meta/train.json", "r") as file:
+with open ("gs://microwave-ai-food-101/food-101/food-101/meta/train.json", "r") as file:
     train_json = json.load(file)
 
-with open ("gs://microwave-ai-food101/food-101/food-101/meta/test.json", "r") as file:
+with open ("gs://microwave-ai-food-101/food-101/food-101/meta/test.json", "r") as file:
     test_json = json.load(file)
 
 
@@ -50,7 +50,7 @@ def readData(json):
         for food_file in train_json[food]:
             # For local use
             # X_dat.append(mpimg.imread(f"data/food-101/images/{food_file}.jpg", format='jpg')[:,:,0])
-            X_dat.append(mpimg.imread(f"gs://food-101/food-101/images/{food_file}.jpg", format='jpg')[:,:,0])
+            X_dat.append(mpimg.imread(f"gs://microwave-ai-food-101/food-101/food-101/images/{food_file}.jpg", format='jpg')[:,:,0])
             y_dat.append(food)
     return X_dat, y_dat
 
