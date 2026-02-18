@@ -16,19 +16,73 @@ function App() {
       .catch((err) => console.error("Camera error:", err));
   }, []);
 
-  const captureImage = () => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
 
-    context.drawImage(video, 0, 0);
-    const imageData = canvas.toDataURL("image/png");
+const [capturedImage, setCapturedImage] = useState(null);
+const [imageBlob, setImageBlob] = useState(null);
 
-    console.log("Captured Image:", imageData);
-  };
+const captureImage = async () => {
+  const video = videoRef.current; //live camera stream element
+  const canvas = canvasRef.current; // canvas we paint the video onto
+  const context = canvas.getContext("2d"); ///2d drawing tool for the canvas, not possible to draw anything without ts
+  //make the canvas the same size as the video
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+//the actual photo. copies the current video frame and puts it on the canvas (at position 0,0)
+  context.drawImage(video, 0, 0);
+//converts canvas to file to Blob.
+  canvas.toBlob(async (blob) => {
+//checks that it is actually a blob (safety net)
+    if (!blob) return;
+
+    //stores the image file in react state
+    setImageBlob(blob);
+
+    //creates a temporary url. points to inside the browser to get the image file
+    const previewUrl = URL.createObjectURL(blob);
+    //store the temporary url in state
+    setCapturedImage(previewUrl);
+
+//mimics how file uploads work in HTML form
+    const formData = new FormData();
+    formData.append("image", blob, "food.png");
+
+    try {
+      //send to packend
+      const response = await fetch("http://localhost:5000/predict", {
+        method: "POST",
+        body: formData,
+      });
+
+      // // Check if server responded correctly
+      // if (!response.ok) {
+      //   throw new Error("Server responded with an error");
+      // }
+
+      const data = await response.json();
+      console.log("Server response:", data);
+    } catch (error) {
+      // It will probably error until backend is ready — that’s fine
+      console.log("Backend not ready yet.");
+    }
+
+  }, "image/png"); //converts the canvas into a png
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   return (
     <div style={styles.container}>
@@ -61,6 +115,22 @@ function App() {
         <button onClick={captureImage}>Capture</button>
         <canvas ref={canvasRef} style={{ display: "none" }} />
       </div>
+
+
+
+
+{/* proof that picture was actually taken */}
+{capturedImage && ( //if the image exists, show this -->
+  <div style={{ marginTop: "15px" }}>
+    <h4>Captured Image:</h4> 
+    <img
+      src={capturedImage}
+      alt="Captured food"
+      style={{ width: "100%", borderRadius: "10px" }}
+    />
+  </div>
+)}
+
 
       {/* Step 3: Heat Slider */}
       <div style={styles.card}>
