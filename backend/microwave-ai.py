@@ -21,12 +21,19 @@ import random
 # with open ("data/food-101/meta/test.json", "r") as file:
 #     test_json = json.load(file)
 
-with open ("gs://microwave-ai-food-101/food-101/food-101/meta/train.json", "r") as file:
+# with open ("gs://microwave-ai-food-101/food-101/food-101/meta/train.json", "r") as file:
+#     train_json = json.load(file)
+
+
+
+# with open ("gs://microwave-ai-food-101/food-101/food-101/meta/test.json", "r") as file:
+#     test_json = json.load(file)
+
+with open ("data/food-101/meta/train.json", "r") as file:
     train_json = json.load(file)
-
-with open ("gs://microwave-ai-food-101/food-101/food-101/meta/test.json", "r") as file:
-    test_json = json.load(file)
-
+    
+with open ("data/food-101/meta/test.json", "r") as file:
+    train_json = json.load(file)
 
 # Create Encoder & Decoder
 encodeTable = {}
@@ -78,3 +85,8 @@ model.compile(
 )
 
 history = model.fit(X_train, y_train, epochs=8, validation_data=(X_test,y_test))
+
+
+#added 2/25 
+model.save("microwave-ai.h5")
+#joblib.dump(le, "LabelEncoder.pkl")

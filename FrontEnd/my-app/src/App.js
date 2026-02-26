@@ -48,7 +48,7 @@ const captureImage = async () => {
     formData.append("image", blob, "food.png");
 
     try {
-      //send to packend
+      //send to backend
       const response = await fetch("http://localhost:5000/predict", {
         method: "POST",
         body: formData,
@@ -88,26 +88,9 @@ const captureImage = async () => {
     <div style={styles.container}>
       <h2>Smart Microwave AI</h2>
 
-      {/* Step 1: Wattage */}
-      <div style={styles.card}>
-        <h3>1. Select Microwave Wattage</h3>
 
-        <div>
-          <button onClick={() => setWattage(700)}>700W</button>
-          <button onClick={() => setWattage(900)}>900W</button>
-          <button onClick={() => setWattage(1100)}>1100W</button>
-        </div>
 
-        <input
-          type="number"
-          placeholder="Custom wattage"
-          value={wattage}
-          onChange={(e) => setWattage(e.target.value)}
-          style={styles.input}
-        />
-      </div>
-
-      {/* Step 2: Camera */}
+      {/*Camera */}
       <div style={styles.card}>
         <h3>2. Take Photo of Food</h3>
 
@@ -115,9 +98,6 @@ const captureImage = async () => {
         <button onClick={captureImage}>Capture</button>
         <canvas ref={canvasRef} style={{ display: "none" }} />
       </div>
-
-
-
 
 {/* proof that picture was actually taken */}
 {capturedImage && ( //if the image exists, show this -->
@@ -130,34 +110,7 @@ const captureImage = async () => {
     />
   </div>
 )}
-
-
-      {/* Step 3: Heat Slider */}
-      <div style={styles.card}>
-        <h3>3. Select Heat Preference</h3>
-
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={heatLevel}
-          onChange={(e) => setHeatLevel(e.target.value)}
-          style={{
-            width: "100%",
-            background: `linear-gradient(to right, lightblue, red)`
-          }}
-        />
-
-        <p>
-          Heat Level:{" "}
-          {heatLevel < 33
-            ? "Warm"
-            : heatLevel < 66
-            ? "Medium"
-            : "Hot"}
-        </p>
-      </div>
-    </div>
+  </div>
   );
 }
 
