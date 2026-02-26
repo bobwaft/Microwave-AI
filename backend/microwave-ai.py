@@ -21,18 +21,11 @@ import random
 # with open ("data/food-101/meta/test.json", "r") as file:
 #     test_json = json.load(file)
 
-# with open ("gs://microwave-ai-food-101/food-101/food-101/meta/train.json", "r") as file:
-#     train_json = json.load(file)
 
-
-
-# with open ("gs://microwave-ai-food-101/food-101/food-101/meta/test.json", "r") as file:
-#     test_json = json.load(file)
-
-with open ("data/food-101/meta/train.json", "r") as file:
+with open ("food-101/meta/train.json", "r") as file:
     train_json = json.load(file)
     
-with open ("data/food-101/meta/test.json", "r") as file:
+with open ("food-101/meta/test.json", "r") as file:
     train_json = json.load(file)
 
 # Create Encoder & Decoder
