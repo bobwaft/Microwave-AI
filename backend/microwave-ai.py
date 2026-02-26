@@ -50,7 +50,7 @@ def readData(json):
         for food_file in train_json[food]:
             # For local use
             # X_dat.append(mpimg.imread(f"data/food-101/images/{food_file}.jpg", format='jpg')[:,:,0])
-            X_dat.append(mpimg.imread(f"food-101/food-101/images/{food_file}.jpg", format='jpg')[:,:,0])
+            X_dat.append(mpimg.imread(f"food-101/food-101/images/{food_file}.jpg", format='jpg')[:,0])
             y_dat.append(food)
     return X_dat, y_dat
 
