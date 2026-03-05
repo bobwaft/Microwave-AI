@@ -399,7 +399,7 @@ const styles = {
   card: {
     background: "#FFF9F4",
     padding: "20px",
-    borderRadius: "15px",
+    borderRadius: "15px", 
     marginBottom: "20px",
   },
   button: {
