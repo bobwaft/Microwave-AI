@@ -25,6 +25,9 @@ const SPECIFIC_HEAT_CATEGORIES = {
   low: { label: "Low Moisture (Dry/Bread)", value: 2.8 },
 };
 
+const MICROWAVE_EFFICIENCY = 0.6;
+
+
 function App() {
   const [step, setStep] = useState(1);
   const [microwaves, setMicrowaves] = useState(DEFAULT_MICROWAVES);
@@ -38,7 +41,7 @@ function App() {
   });
 
   const [capturedImage, setCapturedImage] = useState(null);
-
+  const [imageBlob, setImageBlob] = useState(null);   
   const [foodInput, setFoodInput] = useState("");
   const [specificHeatResult, setSpecificHeatResult] = useState(null);
 
@@ -73,8 +76,33 @@ function App() {
       if (!blob) return;
       const previewUrl = URL.createObjectURL(blob);
       setCapturedImage(previewUrl);
+      setImageBlob(blob);
     }, "image/png");
   };
+//send image to API
+const sendImageToAPI = async () => {
+  if (!imageBlob) {
+    alert("Capture an image first");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("image", imageBlob);
+
+  try {
+    const response = await fetch("http://127.0.0.1:5000/predict", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+    console.log("Prediction:", data);
+
+  } catch (err) {
+    console.error("Upload error:", err);
+  }
+};
+
 
   /* -------------------- SPECIFIC HEAT TEST FUNCTION -------------------- */
   const detectSpecificHeatCategory = (food) => {
@@ -178,16 +206,17 @@ function App() {
             <h3>Set Heating Preferences</h3>
 
             <label>🌡 Target Temperature: {preferences.targetTemp}°C</label>
+             <p></p>
             <input
               type="range"
               min="30"
-              max="100"
+              max="60"
               value={preferences.targetTemp}
               onChange={(e) =>
-                setPreferences({ ...preferences, targetTemp: e.target.value })
+                setPreferences({ ...preferences, targetTemp: Number(e.target.value), })
               }
             />
-
+            <p></p>
             <label>⚖ Mass (grams)</label>
             <input
               type="number"
@@ -195,39 +224,44 @@ function App() {
               placeholder="Enter mass in grams"
               value={preferences.mass}
               onChange={(e) =>
-                setPreferences({ ...preferences, mass: e.target.value })
+                setPreferences({ ...preferences, mass: Number(e.target.value), })
               }
             />
 
             <button style={styles.button} onClick={() => setStep(3)}>
-              Next: Camera
+              Next
             </button>
           </div>
         )}
 
         {/* -------------------- STEP 3: CAMERA -------------------- */}
-        {step === 3 && selectedMicrowave && (
-          <>
-            <div style={styles.card}>
-              <strong>{selectedMicrowave.name}</strong>
-              <div>{selectedMicrowave.wattage} W</div>
-            </div>
+   {/* -------------------- STEP 3: CAMERA -------------------- */}
+{step === 3 && selectedMicrowave && (
+  <>
+    <div style={styles.card}>
+      <strong>{selectedMicrowave.name}</strong>
+      <div>{selectedMicrowave.wattage} W</div>
+    </div>
 
-            <div style={styles.card}>
-              <video ref={videoRef} autoPlay style={styles.video} />
-              <button style={styles.button} onClick={captureImage}>
-                📸 Capture Food
-              </button>
-              <canvas ref={canvasRef} style={{ display: "none" }} />
-            </div>
+    <div style={styles.card}>
+      <video ref={videoRef} autoPlay style={styles.video} />
+      <button style={styles.button} onClick={captureImage}>
+        📸 Capture Food
+      </button>
+      <canvas ref={canvasRef} style={{ display: "none" }} />
+    </div>
 
-            {capturedImage && (
-              <div style={styles.card}>
-                <img src={capturedImage} alt="Captured" style={styles.previewImage} />
-              </div>
-            )}
-          </>
-        )}
+    {capturedImage && (
+      <div style={styles.card}>
+        <img src={capturedImage} alt="Captured" style={styles.previewImage} />
+
+        <button style={styles.button} onClick={sendImageToAPI}>
+          Analyze Food
+        </button>
+      </div>
+    )}
+  </>
+)}
 
         {/* -------------------- STEP 4: SPECIFIC HEAT TEST -------------------- */}
         {step === 4 && (
