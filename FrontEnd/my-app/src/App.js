@@ -27,12 +27,13 @@ const SPECIFIC_HEAT_CATEGORIES = {
 
 const MICROWAVE_EFFICIENCY = 0.6;
 
-
 function App() {
   const [step, setStep] = useState(1);
   const [microwaves, setMicrowaves] = useState(DEFAULT_MICROWAVES);
   const [selectedMicrowave, setSelectedMicrowave] = useState(null);
   const [customMicrowave, setCustomMicrowave] = useState({ name: "", wattage: "" });
+const [microwaveTime, setMicrowaveTime] = useState(null);
+
 
   const [preferences, setPreferences] = useState({
     targetTemp: 60,
@@ -47,6 +48,23 @@ function App() {
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+
+
+//calc
+  const calculateMicrowaveTime = () => {
+  if (!specificHeatResult) {
+    alert("Analyze food first");
+    return;
+  }
+
+  const deltaT = preferences.targetTemp - preferences.initialTemp;
+  const timeSeconds =
+    (preferences.mass *
+      specificHeatResult.value *
+      deltaT) /
+    (MICROWAVE_EFFICIENCY * selectedMicrowave.wattage);
+  setMicrowaveTime(timeSeconds);
+};
 
   /* -------------------- CAMERA -------------------- */
   useEffect(() => {
@@ -203,8 +221,25 @@ const sendImageToAPI = async () => {
         {/* -------------------- STEP 2: PREFERENCES -------------------- */}
         {step === 2 && selectedMicrowave && (
           <div style={styles.card}>
+
             <h3>Set Heating Preferences</h3>
 
+            <label>🌡 Initial Temperature: {preferences.InitialTemp}°C</label>
+            <p></p>
+            <input
+              type="range"
+              min="30"
+              max="60"
+              value={preferences.InitialTemp}
+              onChange={(e) =>
+                setPreferences({ ...preferences, InitialTemp: Number(e.Initial.value), })
+              }
+            
+            />
+
+            <p></p>
+            <p></p>
+            
             <label>🌡 Target Temperature: {preferences.targetTemp}°C</label>
              <p></p>
             <input
@@ -234,7 +269,7 @@ const sendImageToAPI = async () => {
           </div>
         )}
 
-        {/* -------------------- STEP 3: CAMERA -------------------- */}
+        
    {/* -------------------- STEP 3: CAMERA -------------------- */}
 {step === 3 && selectedMicrowave && (
   <>
@@ -291,12 +326,34 @@ const sendImageToAPI = async () => {
                 <div>Specific Heat: {specificHeatResult.value} J/g°C</div>
               </div>
             )}
+
+            <button
+              style={styles.button}
+              onClick={calculateMicrowaveTime}
+            >
+  Calculate Microwave Time
+
+  {microwaveTime && (
+  <div style={{ marginTop: 20 }}>
+    <strong>Microwave Time:</strong>
+    <div>{microwaveTime.toFixed(1)} seconds</div>
+    <div>{(microwaveTime / 60).toFixed(2)} minutes</div>
+  </div>
+)}
+</button>
+
           </div>
         )}
       </div>
     </div>
   );
 }
+
+
+
+
+
+
 
 /* -------------------- STYLES -------------------- */
 const styles = {
