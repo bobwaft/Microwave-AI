@@ -43,13 +43,16 @@ model = load_model()
 # TODO 5: Create a dictionary that converts model output indices
 # back into readable food names
 # NOTE: These values must match the encoding used during training
-decodeTable = {
-    0: "pizza",
-    1: "burger",
-    2: "sushi",
-    3: "rice",
-    4: "soup"
-}
+foods_trimmed = ['hot_and_sour_soup', 'samosa', 'sashimi', 'pork_chop', 'spring_rolls', 'panna_cotta', 'tacos', 'pad_thai', 'poutine', 'ramen', 'pulled_pork_sandwich', 'bibimbap', 'beignets', 'apple_pie', 'crab_cakes', 'risotto', 'paella', 'steak', 'baby_back_ribs', 'miso_soup', 'club_sandwich', 'carrot_cake', 'falafel', 'bread_pudding', 'chicken_wings', 'gnocchi', 'creme_brulee', 'escargots','spaghetti_bolognese', 'mussels', 'scallops', 'baklava', 'edamame', 'macaroni_and_cheese', 'pancakes', 'garlic_bread', 'onion_rings', 'red_velvet_cake', 'grilled_salmon', 'chicken_curry', 'fish_and_chips', 'lasagna', 'peking_duck', 'clam_chowder', 'french_onion_soup', 'fried_rice', 'donuts', 'gyoza', 'ravioli', 'fried_calamari', 'spaghetti_carbonara', 'french_toast', 'lobster_bisque', 'french_fries', 'shrimp_and_grits', 'filet_mignon', 'hamburger', 'dumplings', 'eggs_benedict', 'breakfast_burrito', 'hot_dog', 'waffles', 'huevos_rancheros', 'pizza', 'chicken_quesadilla', 'pho', 'prime_rib', 'omelette', 'grilled_cheese_sandwich', 'lobster_roll_sandwich', 'nachos']
+def decode(index):
+    return foods_trimmed[index]
+# decodeTable = {
+#     0: "pizza",
+#     1: "burger",
+#     2: "sushi",
+#     3: "rice",
+#     4: "soup"
+# }
 
 
 # -------------------- IMAGE PREPROCESSING --------------------
@@ -63,18 +66,13 @@ decodeTable = {
 def preprocess_image(image):
 
     # TODO 7: Resize the image to the size used during training
-    image = image.resize((224, 224))
+    image = image.resize((512, 512))
 
     # TODO 8: Convert the image into a numpy array
     img_array = np.array(image)
 
     # TODO 9: Normalize pixel values (0–255 -> 0–1)
     img_array = img_array / 255.0
-
-    # TODO 10: Add a batch dimension so the shape becomes
-    # (1, height, width, channels)
-    img_array = np.expand_dims(img_array, axis=0)
-
     return img_array
 
 
@@ -84,47 +82,31 @@ def preprocess_image(image):
 # The React frontend will send captured images here
 @app.route("/predict", methods=["POST"])
 def predict():
-
     try:
+        # get uploaded blob file
+        file = request.files['image']
+        # convert blob to PIL image
+        image = Image.open(file.stream).convert("RGB")
 
-        # TODO 12: Read JSON data sent from the frontend
-        data = request.json
-
-        # TODO 13: Extract the base64 encoded image string
-        image_data = data["image"]
-
-        # TODO 14: Remove the base64 header
-        # Example header: "data:image/png;base64,"
-        image_data = image_data.split(",")[1]
-
-        # TODO 15: Decode the base64 string into raw image bytes
-        image_bytes = base64.b64decode(image_data)
-
-        # TODO 16: Convert the raw bytes into a PIL Image
-        image = Image.open(io.BytesIO(image_bytes))
-
-        # TODO 17: Preprocess the image using the helper function
+        # preprocess
         processed_image = preprocess_image(image)
 
-        # TODO 18: Run the TensorFlow model prediction
+        # add batch dimension
+        processed_image = np.expand_dims(processed_image, axis=0)
+
+        # run model prediction
         prediction = model.predict(processed_image)
 
-        # TODO 19: Find the predicted class index
+        # get predicted class
         class_id = int(np.argmax(prediction))
+        food_prediction = decode(class_id)
 
-        # TODO 20: Convert the predicted class index into a food name
-        food_prediction = decodeTable.get(class_id, "Unknown")
-
-        # TODO 21: Return the prediction as a JSON response
         return jsonify({
             "prediction": food_prediction
         })
 
-    # TODO 22: Add basic error handling so the API doesn't crash
     except Exception as e:
-        return jsonify({
-            "error": str(e)
-        })
+        return jsonify({"error": str(e)}), 500
 
 
 # -------------------- RUN SERVER --------------------
