@@ -225,7 +225,7 @@ const sendImageToAPI = async (blob) => {
 
 
  try {
-   const response = await fetch("http://34.124.219.23:5000/your/route", {
+   const response = await fetch("http://34.124.219.23:5000/predict", {
      method: "POST",
      body: formData
    });
