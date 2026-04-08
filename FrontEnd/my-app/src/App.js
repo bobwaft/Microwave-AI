@@ -225,7 +225,7 @@ const sendImageToAPI = async (blob) => {
 
 
  try {
-   const response = await fetch("http://127.0.0.1:5000/predict", {
+   const response = await fetch("http://34.124.219.23:5000/your/route", {
      method: "POST",
      body: formData
    });
@@ -578,47 +578,6 @@ return (
 
 
 </div>
-
-
-
-
-{/*  Heat Key,            maybe add
-<div style={{
- marginTop: "15px",
- padding: "10px",
- background: "#F7F3EE",
- borderRadius: "10px",
- fontSize: "14px"
-}}>
- <strong>Temperature Guide:</strong>
- <ul style={{ paddingLeft: "18px", marginTop: "8px" }}>
-   <li><strong>Room Temperature (~20°C):</strong> Not heated</li>
-   <li><strong>Warm (25–35°C):</strong> Slightly warm, comfortable to eat</li>
-   <li><strong>Hot (35–45°C):</strong> Ready to eat, might need a quick blow</li>
-   <li><strong>Very Hot (45–55°C):</strong> Needs cooling before eating</li>
-   <li><strong>Scalding Hot (55–60°C):</strong> Too hot to eat immediately</li>
- </ul>
-</div> */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
          <button style={styles.button} onClick={() => setStep(3)}>
            Next
          </button>
