@@ -114,4 +114,4 @@ def predict():
 # TODO 23: Start the Flask server
 # Enable debug mode during development
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host = '0.0.0.0', port=5000)
